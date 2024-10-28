@@ -48,3 +48,6 @@ __queuestorage__
 __azurite_db*__.json
 
 .DS_Store
+
+server
+main
