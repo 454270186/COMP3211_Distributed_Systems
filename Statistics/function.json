@@ -1,0 +1,11 @@
+{
+  "bindings": [
+    {
+      "type": "sqlTrigger",
+      "direction": "in",
+      "name": "SqlStatisticsTrigger",
+      "tableName": "EnvironmentalData",
+      "connectionStringSetting": "SQLConnectionStringSetting"
+    }
+  ]
+}
