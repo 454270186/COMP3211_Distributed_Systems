@@ -20,8 +20,6 @@ func NewRouter() *gin.Engine {
 		}
 	})
 	r.POST("/Statistics", func(c *gin.Context) {
-		fmt.Println("here")
-
 		logs := make([]string, 0)
 		datas := GetRows(context.Background())
 
