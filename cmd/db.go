@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	db *sql.DB
-	server = "erfeiyu.database.windows.net"
-	dbPort = 1433
-	user = "erfei"
+	db       *sql.DB
+	server   = "erfeiyu.database.windows.net"
+	dbPort   = 1433
+	user     = "erfei"
 	password = "terryhimself88."
 	database = "erfeiyu"
 
@@ -44,7 +44,7 @@ func init() {
 	fmt.Println("db init successfully")
 }
 
-func InsertRandomRecord(ctx context.Context) error {
+func InsertRandomRecord(ctx context.Context, sensorCnt int) error {
 	stmt := `
 		INSERT INTO EnvironmentalData
 		(SensorID, Temperature, WindSpeed, RelativeHumidity, CO2Level, Timestamp)
@@ -52,40 +52,42 @@ func InsertRandomRecord(ctx context.Context) error {
 		(@p1, @p2, @p3, @p4, @p5, @p6);
 	`
 
-	sensorId := 1 + rand.Intn(20)
-	temperature := 8 + rand.Intn(8)
-	windSpeed := 15 + rand.Intn(11)
-	humidity := 40 + rand.Intn(31)
-	co2 := 500 + rand.Intn(1001)
+	for i := 1; i <= sensorCnt; i++ {
+		sensorId := i
+		temperature := 8 + rand.Intn(8)
+		windSpeed := 15 + rand.Intn(11)
+		humidity := 40 + rand.Intn(31)
+		co2 := 500 + rand.Intn(1001)
 
-	_, err := db.ExecContext(
-		ctx,
-		stmt,
-		sql.Named("p1", sensorId),
-		sql.Named("p2", temperature),
-		sql.Named("p3", windSpeed),
-		sql.Named("p4", humidity),
-		sql.Named("p5", co2),
-		sql.Named("p6", time.Now()),
-	)
-	if err != nil {
-		return err
+		_, err := db.ExecContext(
+			ctx,
+			stmt,
+			sql.Named("p1", sensorId),
+			sql.Named("p2", temperature),
+			sql.Named("p3", windSpeed),
+			sql.Named("p4", humidity),
+			sql.Named("p5", co2),
+			sql.Named("p6", time.Now()),
+		)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf(
+			"SensorID:(%v) Temperature(%v) WindSpeed(%v) RelativeHumidity(%v) CO2Level(%v)\n",
+			sensorId, temperature, windSpeed, humidity, co2,
+		)
 	}
-
-	fmt.Printf(
-		"SensorID:(%v) Temperature(%v) WindSpeed(%v) RelativeHumidity(%v) CO2Level(%v)\n",
-		sensorId, temperature, windSpeed, humidity, co2,
-	)
 	return nil
 }
 
 func GetRows(ctx context.Context) []*EnvironmentalData {
-    query := `
+	query := `
         SELECT ID, SensorID, Temperature, WindSpeed, RelativeHumidity, CO2Level
         FROM EnvironmentalData
     `
 
-    data := make([]*EnvironmentalData, 0)
+	data := make([]*EnvironmentalData, 0)
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		log.Println(err)
@@ -110,6 +112,5 @@ func GetRows(ctx context.Context) []*EnvironmentalData {
 		data = append(data, d)
 	}
 
-
-    return data
+	return data
 }
